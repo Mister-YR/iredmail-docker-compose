@@ -1,7 +1,7 @@
+#!/bin/bash
 # MAX swap file size in raspbian =2Gb, and current value =100mb:
 # 1 - MAX swap size ~ /sbin/dphys-swapfile
 # 2 - CURRENT swap size ~ /etc/dphys-swapfile
-#!/bin/bash
 echo "In raspbian default MAX max sawp size = 2048 |-_-|"
 echo "enter new swap MAX file size in BIN format:"
 read -p "~ for example 8196 =" swap_size_max

@@ -16,15 +16,14 @@ services:
       - "465:465"
       - "587:587"
     volumes:
-      - /docker-compose/iredmail/data/backup-mysql:/var/vmail/backup/mysql
-      - /docker-compose/iredmail/data/mailboxes:/var/vmail/vmail1
-      - /docker-compose/iredmail/data/mlmmj:/var/vmail/mlmmj
-      - /docker-compose/iredmail/data/mlmmj-archive:/var/vmail/mlmmj-archive
-      - /docker-compose/iredmail/data/imapsieve_copy:/var/vmail/imapsieve_copy
-      - /docker-compose/iredmail/data/custom:/opt/iredmail/custom
-      - /docker-compose/iredmail/data/ssl:/opt/iredmail/ssl
-      - /docker-compose/iredmail/data/mysql:/var/lib/mysql
-      - /docker-compose/iredmail/data/clamav:/var/lib/clamav
-      - /docker-compose/iredmail/data/sa_rules:/var/lib/spamassassin
-      - /docker-compose/iredmail/data/postfix_queue:/var/spool/postfix
-    # Add any other configuration settings here
+      - /mail-data/iredmail/data/backup-mysql:/var/vmail/backup/mysql
+      - /mail-data/iredmail/data/mailboxes:/var/vmail/vmail1
+      - /mail-data/iredmail/data/mlmmj:/var/vmail/mlmmj
+      - /mail-data/iredmail/data/mlmmj-archive:/var/vmail/mlmmj-archive
+      - /mail-data/iredmail/data/imapsieve_copy:/var/vmail/imapsieve_copy
+      - /mail-data/iredmail/data/custom:/opt/iredmail/custom
+      - /mail-data/iredmail/data/ssl:/opt/iredmail/ssl
+      - /mail-data/iredmail/data/mysql:/var/lib/mysql
+      - /mail-data/iredmail/data/clamav:/var/lib/clamav
+      - /mail-data/iredmail/data/sa_rules:/var/lib/spamassassin
+      - /mail-data/iredmail/data/postfix_queue:/var/spool/postfix
