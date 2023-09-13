@@ -5,7 +5,7 @@
 # Link: https://github.com/Mister-YR/iredmail-docker-compose.git
 # Version: 4.0
 ######################################################
-
+sudo apt-get install dialog -y
 # Check if the 'dialog' utility is installed
 if ! command -v dialog &> /dev/null; then
   echo "The 'dialog' utility is not installed. Please install it to run this script."
@@ -27,6 +27,10 @@ show_message() {
 # Extend swap file to 4gb
 $desired_swap_size_mb=4096
 show_message "swap size must been 4 gb or greather"
+# Check if a swap file already exists
+# Specify the desired swap file size in megabytes (4GB = 4096MB)
+desired_swap_size_mb=4096
+
 # Check if a swap file already exists
 if [ -e /swapfile ]; then
     current_swap_size_kb=$(du -m /swapfile | cut -f1)
@@ -51,15 +55,19 @@ else
     sudo swapon /swapfile  # Turn on swap
     show_message "Swap file created with size $desired_swap_size_mb MB."
 fi
+
+# Verify the current swap size
+free -h
 # Verify the current swap size
 swap_check=$(free -h)
-show_message $swap_check
+show_message "$swap_check"
 ######################################################
 # Description: install all denendency
 # Version: 4.0
 ######################################################
 
 # Update package manager repositories
+show_message "install all dependency"
 show_message "Updating package manager repositories..."
 sudo apt-get update
 
