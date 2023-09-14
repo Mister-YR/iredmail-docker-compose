@@ -59,7 +59,7 @@ fi
 # Verify the current swap size
 free -h
 # Verify the current swap size
-swap_check=$(free -h)
+swap_check=$(free -h | grep 'Swap' | awk '{print $2}')
 show_message "$swap_check"
 ######################################################
 # Description: install all denendency
