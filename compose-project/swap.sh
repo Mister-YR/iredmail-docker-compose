@@ -1,32 +1,48 @@
 #!/bin/bash
 
-# Specify the desired swap file size in megabytes (4GB = 4096MB)
-desired_swap_size_mb=4096
+# Get the current swap size
+SWAP_SIZE=$(free -g | grep Swap | awk '{print $2}')
 
-# Check if a swap file already exists
-if [ -e /swapfile ]; then
-    current_swap_size_kb=$(du -m /swapfile | cut -f1)
-    
-    # Check if the current swap size is less than the desired size
-    if [ "$current_swap_size_kb" -lt "$desired_swap_size_mb" ]; then
-        echo "Extending the existing swap file..."
-        sudo swapoff /swapfile  # Turn off swap
-        sudo dd if=/dev/zero of=/swapfile bs=1M count="$desired_swap_size_mb" status=progress
-        sudo chmod 600 /swapfile  # Secure permissions
-        sudo mkswap /swapfile  # Create swap space
-        sudo swapon /swapfile  # Turn swap back on
-        echo "Swap file extended to $desired_swap_size_mb MB."
-    else
-        echo "Swap file is already at or larger than the desired size."
-    fi
-else
-    echo "No swap file found. Creating a new swap file..."
-    sudo dd if=/dev/zero of=/swapfile bs=1M count="$desired_swap_size_mb" status=progress
-    sudo chmod 600 /swapfile  # Secure permissions
-    sudo mkswap /swapfile  # Create swap space
-    sudo swapon /swapfile  # Turn on swap
-    echo "Swap file created with size $desired_swap_size_mb MB."
+# Check if swap exists
+if [[ $SWAP_SIZE -eq 0 ]]; then
+  echo "Swap does not exist."
+
+  # Create a new swap file
+  sudo dd if=/dev/zero of=/swapfile bs=1M count=4096
+  # Format the swap file
+  sudo mkswap /swapfile
+  # Enable the swap file
+  sudo swapon /swapfile
+
+  # Make the swap file permanent
+  sudo echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
+
+  echo "Swap has been created and extended to 4 GB and made permanent."
+  exit 0
 fi
 
+# Check if swap is less than 4 GB
+if [[ $SWAP_SIZE -lt 4 ]]; then
+  # Drop the existing swap
+#  sudo swapoff /swapfile
+  sudo swapoff -v /swap.img
+  rm -f /swap.img 
+
+  # Create a new swap file
+  sudo dd if=/dev/zero of=/swapfile bs=1M count=4096
+  # Format the swap file
+  sudo mkswap /swapfile
+  # Enable the swap file
+  sudo swapon /swapfile
+
+  # Make the swap file permanent
+  sudo echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
+
+  echo "Swap has been extended to 4 GB and made permanent."
+  exit 0
+fi
+
+# Swap is equal to 4 GB or greater
+echo "Swap is already equal to 4 GB or greater."
 # Verify the current swap size
 free -h
