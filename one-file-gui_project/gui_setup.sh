@@ -5,13 +5,11 @@
 # Link: https://github.com/Mister-YR/iredmail-docker-compose.git
 # Version: 4.0
 ######################################################
-sudo apt-get install dialog -y
-# Check if the 'dialog' utility is installed
+# Check if the 'dialog' utility present
 if ! command -v dialog &> /dev/null; then
-  echo "The 'dialog' utility is not installed. Please install it to run this script."
-  exit 1
+  echo "Installing dialog utility ( ^_^)／"
+  sudo apt-get install dialog -y
 fi
-
 # Function to display an input dialog and store the result in a variable
 get_input() {
   local result
@@ -24,51 +22,74 @@ show_message() {
   dialog --msgbox "$1" 10 40
 }
 
-# Extend swap file to 4gb
-$desired_swap_size_mb=4096
-show_message "swap size must been 4 gb or greather"
-# Check if a swap file already exists
-# Specify the desired swap file size in megabytes (4GB = 4096MB)
-desired_swap_size_mb=4096
+swap_resize() {
+  # Check if swap exists 
+    SWAP_SIZE=$(free -g | grep Swap | awk '{print $2}')
+  if [[ $SWAP_SIZE -eq 0 ]]; then
+      # Create a new swap file
+      sudo dd if=/dev/zero of=/swapfile bs=1M count=4096
+      # Format the swap file
+      sudo mkswap /swapfile
+      # Enable the swap file
+      sudo swapon /swapfile
+      # Make the swap file permanent
+      sudo echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
+      dialog --title "Done!" --msgbox "Swap has been created and extended to 4 GB and made permanent. (◔_◔)🍔🍕" 6 60
 
-# Check if a swap file already exists
-if [ -e /swapfile ]; then
-    current_swap_size_kb=$(du -m /swapfile | cut -f1)
-    
-    # Check if the current swap size is less than the desired size
-    if [ "$current_swap_size_kb" -lt "$desired_swap_size_mb" ]; then
-        show_message "Extending the existing swap file..."
-        sudo swapoff /swapfile  # Turn off swap
-        sudo dd if=/dev/zero of=/swapfile bs=1M count="$desired_swap_size_mb" status=progress
-        sudo chmod 600 /swapfile  # Secure permissions
-        sudo mkswap /swapfile  # Create swap space
-        sudo swapon /swapfile  # Turn swap back on
-        show_message "Swap file extended to $desired_swap_size_mb MB."
-    else
-        show_message "Swap file is already at or larger than the desired size."
-    fi
-else
-    show_message "No swap file found. Creating a new swap file..."
-    sudo dd if=/dev/zero of=/swapfile bs=1M count="$desired_swap_size_mb" status=progress
-    sudo chmod 600 /swapfile  # Secure permissions
-    sudo mkswap /swapfile  # Create swap space
-    sudo swapon /swapfile  # Turn on swap
-    show_message "Swap file created with size $desired_swap_size_mb MB."
-fi
+  elif [[ $SWAP_SIZE -lt 3 ]]; then
+  # if swap less than 4GB
+      dialog --title "drop existing swap" --msgbox "existing swap = $SWAP_SIZE will be dropped ( ͡° ͜ʖ ͡°) " 6 60
+      sudo swapoff -v /swap.img
+      rm -f /swap.img 
+      sudo swapoff /swapfile
+      # Create a new swap file
+      sudo dd if=/dev/zero of=/swapfile bs=1M count=4096
+      # Format the swap file
+      sudo mkswap /swapfile
+      sudo chmod 600 /swapfile  # Secure permissions
+      # Enable the swap file
+      sudo swapon /swapfile
+      # Make the swap file permanent
+      sudo echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
+      dialog --title "Create new Swap" --msgbox "Swap has been extended to 4 GB and made permanent."
 
-# Verify the current swap size
-free -h
+  else
+      # Swap is equal to or greater than 4 GB
+      dialog --title "Swap is already equal to or more than 4 GB 👍" --msgbox "Skipping..." 6 60
+  fi
+}
+# Main menu
+while true; do
+    choice=$(dialog --clear --title "Package Management Menu" --menu "Choose an option:" 12 60 4 \
+        1 "Resize or Create swap file" \
+        2 "install dependency" 2>&1 >/dev/tty)
+
+    case $choice in
+        1)
+            swap_resize
+            ;;
+        2)
+            # processing to install...
+            echo "Processing to update & install dependency..."
+            sleep 2
+            clear
+            break
+            ;;
+        *)
+            ;;
+    esac
+done
+
 # Verify the current swap size
 swap_check=$(free -h | grep 'Swap' | awk '{print $2}')
-show_message "$swap_check"
+show_message " Current swap size - $swap_check 👍"
 ######################################################
 # Description: install all denendency
 # Version: 4.0
 ######################################################
-
 # Update package manager repositories
 show_message "install all dependency"
-show_message "Updating package manager repositories..."
+# Update repos
 sudo apt-get update
 
 # Install Docker
@@ -118,18 +139,19 @@ show_message "Web UI will be running at https://IP:8443 and admin interface at h
 show_message "Docker starting..."
 ######################################################
 ######################################################
-#docker run -d --name iRedMail --env-file /docker-compose/iredmail/iredmail-docker.conf -p 8080:80 -p 8443:443 -p 110:110 -p 995:995 -p 143:143 -p 993:993 -p 25:25 -p 465:465 -p 587:587 -v /docker-compose/iredmail/data/backup-mysql:/var/vmail/backup/mysql -v /docker-compose/iredmail/data/mailboxes:/var/vmail/vmail1 -v /docker-compose/iredmail/data/mlmmj:/var/vmail/mlmmj -v /docker-compose/iredmail/data/mlmmj-archive:/var/vmail/mlmmj-archive -v /docker-compose/iredmail/data/imapsieve_copy:/var/vmail/imapsieve_copy -v /docker-compose/iredmail/data/custom:/opt/iredmail/custom -v /docker-compose/iredmail/data/ssl:/opt/iredmail/ssl -v /docker-compose/iredmail/data/mysql:/var/lib/mysql -v /docker-compose/iredmail/data/clamav:/var/lib/clamav -v /docker-compose/iredmail/data/sa_rules:/var/lib/spamassassin -v /docker-compose/iredmail/data/postfix_queue:/var/spool/postfix iredmail/mariadb:stable
-docker run -d --name iRedMail --env-file .env -p 8080:80 -p 8443:443 -p 110:110 -p 995:995 -p 143:143 -p 993:993 -p 25:25 -p 465:465 -p 587:587 -v /$file_directory/iredmail/data/backup-mysql:/var/vmail/backup/mysql -v /$file_directory/iredmail/data/mailboxes:/var/vmail/vmail1 -v /$file_directory/iredmail/data/mlmmj:/var/vmail/mlmmj -v /$file_directory/iredmail/data/mlmmj-archive:/var/vmail/mlmmj-archive -v /$file_directory/iredmail/data/imapsieve_copy:/var/vmail/imapsieve_copy -v /$file_directory/iredmail/data/custom:/opt/iredmail/custom -v /$file_directory/iredmail/data/ssl:/opt/iredmail/ssl -v /$file_directory/iredmail/data/mysql:/var/lib/mysql -v /$file_directory/iredmail/data/clamav:/var/lib/clamav -v /$file_directory/iredmail/data/sa_rules:/var/lib/spamassassin -v /$file_directory/iredmail/data/postfix_queue:/var/spool/postfix iredmail/mariadb:stable 
+# --restart unless-stopped
+sudo docker run --restart unless-stopped -d --name iRedMail --env-file .env -p 8080:80 -p 8443:443 -p 110:110 -p 995:995 -p 143:143 -p 993:993 -p 25:25 -p 465:465 -p 587:587 -v /$file_directory/iredmail/data/backup-mysql:/var/vmail/backup/mysql -v /$file_directory/iredmail/data/mailboxes:/var/vmail/vmail1 -v /$file_directory/iredmail/data/mlmmj:/var/vmail/mlmmj -v /$file_directory/iredmail/data/mlmmj-archive:/var/vmail/mlmmj-archive -v /$file_directory/iredmail/data/imapsieve_copy:/var/vmail/imapsieve_copy -v /$file_directory/iredmail/data/custom:/opt/iredmail/custom -v /$file_directory/iredmail/data/ssl:/opt/iredmail/ssl -v /$file_directory/iredmail/data/mysql:/var/lib/mysql -v /$file_directory/iredmail/data/clamav:/var/lib/clamav -v /$file_directory/iredmail/data/sa_rules:/var/lib/spamassassin -v /$file_directory/iredmail/data/postfix_queue:/var/spool/postfix iredmail/mariadb:stable 
 ######################################################
 ######################################################
 docker_status=$(docker container ls  | grep 'iredmail*')
-show_message " container created - $docker_status"
+show_message " Container created - $docker_status"
 
 ######################################################
 # Description: diasable ClamAV
 # Version: 4.0
-###################################################### 
-show_message "Disable ClamAV daemon :devilish:"
+######################################################
+ClamAV_off () {
+show_message "Disabling ClamAV daemon ( ◣∀◢)ψ "
 # get container id via container with awk & grep
 container_name=$(docker container ls  | grep 'iredmail*' | awk '{print $1}')
 ###########################################################################
@@ -170,9 +192,9 @@ sudo docker cp /tmp/main.cf $container_name:/etc/postfix/main.cf
 # Copy the modified master.cf file back to the container
 sudo docker cp /tmp/master.cf $container_name:/etc/postfix/master.cf
 
-show_message "Commented out specified lines in main.cf and master.cf files in the iRedMail/MariaDB container"
+show_message "Commented out specified lines in main.cf and master.cf files in the iRedMail/MariaDB container ( ︶｡︶✽) "
 
-sleep 5
+sleep 3
 ###########################################################################
 ############### stop services #############################################
 ###########################################################################
@@ -183,9 +205,9 @@ stop_amavis="sudo /etc/init.d/amavis stop"
 # Run the commands inside the container
 sudo docker exec -it $container_name bash -c "$stop_clamav_daemon && $stop_clamav_freshclam && $stop_amavis"
 
-show_message "Stopped ClamAV daemon, ClamAV Freshclam, and Amavis in the container"
+show_message "Stopped ClamAV daemon, ClamAV Freshclam, and Amavis in the container ( ︶｡︶✽) "
 
-sleep 5
+sleep 3
 ###########################################################################
 ############### remove clamav permanently #################################
 ###########################################################################
@@ -196,10 +218,32 @@ remove_amavis="update-rc.d -f amavis remove"
 # Run the commands inside the container
 docker exec -it $container_name bash -c "$remove_clamav_daemon && $remove_clamav_freshclam && $remove_amavis"
 
-echo "removed ClamAV daemon, ClamAV Freshclam, and Amavis in the container"
-
-sleep 5
-# # Restart the container to apply the changes
+show_message "Removed ClamAV daemon, ClamAV Freshclam, and Amavis in the container ( ︶｡︶✽) "
+# Restart the container to apply the changes
 docker restart $container_name
-# end message
-show_message " your iredmail sucessfully installed"
+# Install sucessfull
+show_message " your iredmail sucessfully installed ◝(^⌣^)◜"
+dialog --clear
+sleep 2
+exit 0
+}
+
+# ClamAV menu
+while true; do
+    choice=$(dialog --clear --title "Package Management Menu" --menu "Choose an option:" 12 60 4 \
+        1 "Disable ClamAV antivirus daemon 😈" \
+        2 "Skip and exit ┐( ͡ಠ ʖ̯ ͡ಠ)┌ " 2>&1 >/dev/tty)
+
+    case $choice in
+        1)
+            ClamAV_off
+            ;;
+        2)
+            # Add your code here instead of exit 0 if needed
+            show_message "See your (▼ ᴥ ▼)"
+            break
+           ;;
+        *)
+            ;;
+    esac
+done
