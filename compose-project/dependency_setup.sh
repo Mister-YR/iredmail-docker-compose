@@ -1,5 +1,4 @@
 #!/bin/bash
-./swap.sh
 # Update the package manager repositories (apt-get for Ubuntu/Debian)
 sudo apt-get update
 # Install Docker
@@ -18,7 +17,7 @@ echo "enter hostamame: for example ~ mail.your_shiny_domail.com"
 read -p mail_hostname
 echo "enter domnain admin password:"
 read -p admin_pass
-echo "your can fong your MLMMJADMIN_API_TOKEN & ROUNDCUBE_DES_KEY in .env file "
+echo "your can find your MLMMJADMIN_API_TOKEN & ROUNDCUBE_DES_KEY in .env file "
 ###############################################################
 echo FIRST_MAIL_DOMAIN=$domain >> .env
 echo HOSTNAME=$mail_hostname >> .env

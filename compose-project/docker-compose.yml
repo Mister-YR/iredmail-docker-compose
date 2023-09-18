@@ -4,8 +4,10 @@ services:
     image: iredmail/mariadb:stable
     container_name: iRedMail
     env_file:
-      - .env  # Reference the .env file here
+    # .env file with mail dependency
+      - .env
     ports:
+    # change port if needed
       - "8080:80"
       - "8443:443"
       - "110:110"
@@ -16,6 +18,7 @@ services:
       - "465:465"
       - "587:587"
     volumes:
+    # this section will carete /mail-data/... directory
       - /mail-data/iredmail/data/backup-mysql:/var/vmail/backup/mysql
       - /mail-data/iredmail/data/mailboxes:/var/vmail/vmail1
       - /mail-data/iredmail/data/mlmmj:/var/vmail/mlmmj
@@ -27,3 +30,5 @@ services:
       - /mail-data/iredmail/data/clamav:/var/lib/clamav
       - /mail-data/iredmail/data/sa_rules:/var/lib/spamassassin
       - /mail-data/iredmail/data/postfix_queue:/var/spool/postfix
+    #restart policy
+    restart: unless-stopped
