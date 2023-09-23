@@ -10,13 +10,14 @@ sudo chmod +x /usr/local/bin/docker-compose
 sudo apt-get install -y openssl
 echo "All dependency installation complete."
 ###############################################################
+rm -f .env
 touch .env
 echo "enter fisrst domain name :"
-read -p domain
+read domain
 echo "enter hostamame: for example ~ mail.your_shiny_domail.com :"
-read -p mail_hostname
+read mail_hostname
 echo "enter domnain admin password :"
-read -p admin_pass
+read admin_pass
 echo "your can find your MLMMJADMIN_API_TOKEN & ROUNDCUBE_DES_KEY in .env file "
 ###############################################################
 echo FIRST_MAIL_DOMAIN=$domain >> .env
