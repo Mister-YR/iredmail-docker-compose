@@ -10,9 +10,13 @@ Setup steps:
 3) Install all dependency via dependency_setup.sh, script will perform:
    
 2.1 update repos
+
 2.2 install docker.io & docker-compose
+
 2.3 install openssl
+
 2.3 create .env file
+
 2.4 read user input for IredMail vars and fill .env file
 
 5) execute docker-compose.yml for install IredMail via docker (sudo docker-compose up -d)
