@@ -1,8 +1,9 @@
 # iredmail-docker-compose
 ###########################################################################
-1) iredmail-docker 
+iredmail-docker 
 Folder with compose file with all dependency for IredMail:
-1) Resize swap via gui_swap_setup.sh (Strongly recommended if you have less than 4GB RAM ▓▓▓▓( ͡° ʖ̯ ͡°)█▓▓▓ )
+Setup steps for docker-compose projects:
+1) Resize swap via gui_swap_setup.sh (Strongly recommended if you have less than 4GB RAM ( ͡° ʖ̯ ͡°) )
 2) Install all dependency via dependency_setup.sh, script will perform:
 2.1 update repos
 2.2 install docker.io & docker-compose
@@ -10,7 +11,7 @@ Folder with compose file with all dependency for IredMail:
 2.3 create .env file
 2.4 read user input for IredMail vars and fill .env file
 3) execute docker-compose.yml for install IredMail via docker (sudo docker-compose up -d)
-4) run clamav_disable.sh, script will disable ClamAV antivirus (Strongly recommended if you have less than 4GB RAM and 2-core CPU  ▓▓▓▓( ͡° ʖ̯ ͡°)█▓▓▓)
+4) run clamav_disable.sh, script will disable ClamAV antivirus (Strongly recommended if you have less than 4GB RAM and 2-core CPU  ( ͡° ʖ̯ ͡° ))
 ###########################################################################
 1) one-file-gui_project 😊
 Single file to install mail service via one script with dialog windows.

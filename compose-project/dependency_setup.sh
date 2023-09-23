@@ -11,11 +11,11 @@ sudo apt-get install -y openssl
 echo "All dependency installation complete."
 ###############################################################
 touch .env
-echo "enter fisrst domain name:"
+echo "enter fisrst domain name :"
 read -p domain
-echo "enter hostamame: for example ~ mail.your_shiny_domail.com"
+echo "enter hostamame: for example ~ mail.your_shiny_domail.com :"
 read -p mail_hostname
-echo "enter domnain admin password:"
+echo "enter domnain admin password :"
 read -p admin_pass
 echo "your can find your MLMMJADMIN_API_TOKEN & ROUNDCUBE_DES_KEY in .env file "
 ###############################################################
