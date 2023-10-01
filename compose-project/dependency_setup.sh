@@ -22,5 +22,9 @@ echo "your can find your MLMMJADMIN_API_TOKEN & ROUNDCUBE_DES_KEY in .env file "
 echo FIRST_MAIL_DOMAIN=$domain >> .env
 echo HOSTNAME=$mail_hostname >> .env
 echo FIRST_MAIL_DOMAIN_ADMIN_PASSWORD=$admin_pass >> .env
+echo MYSQL_ROOT_PASSWORD=$(openssl rand -base64 9 | tr -d '+/' | head -c 12) >> .env
+echo VMAIL_DB_PASSWORD=$(openssl rand -base64 9 | tr -d '+/' | head -c 12) >> .env 
+echo VMAIL_DB_ADMIN_PASSWORD=$(openssl rand -base64 9 | tr -d '+/' | head -c 12) >> .env
+echo AMAVISD_DB_PASSWORD=$(openssl rand -base64 9 | tr -d '+/' | head -c 12) >> .env
 echo MLMMJADMIN_API_TOKEN=$(openssl rand -base64 32) >> .env
 echo ROUNDCUBE_DES_KEY=$(openssl rand -base64 24) >> .env

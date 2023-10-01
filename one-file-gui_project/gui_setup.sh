@@ -100,6 +100,8 @@ sudo apt-get install -y docker.io
 show_message "Installing Docker Compose..."
 sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
 
 # Install OpenSSL
 show_message "Installing OpenSSL..."
@@ -118,8 +120,12 @@ sudo touch .env
 echo "FIRST_MAIL_DOMAIN=$domain" >> .env
 echo "HOSTNAME=$mail_hostname" >> .env
 echo "FIRST_MAIL_DOMAIN_ADMIN_PASSWORD=$admin_pass" >> .env
-echo "MLMMJADMIN_API_TOKEN=$(openssl rand -base64 32)" >> .env
-echo "ROUNDCUBE_DES_KEY=$(openssl rand -base64 24)" >> .env
+echo MYSQL_ROOT_PASSWORD=$(openssl rand -base64 9 | tr -d '+/' | head -c 12) >> .env
+echo VMAIL_DB_PASSWORD=$(openssl rand -base64 9 | tr -d '+/' | head -c 12) >> .env 
+echo VMAIL_DB_ADMIN_PASSWORD=$(openssl rand -base64 9 | tr -d '+/' | head -c 12) >> .env
+echo AMAVISD_DB_PASSWORD=$(openssl rand -base64 9 | tr -d '+/' | head -c 12) >> .env
+echo MLMMJADMIN_API_TOKEN=$(openssl rand -base64 32) >> .env
+echo ROUNDCUBE_DES_KEY=$(openssl rand -base64 24) >> .env
 
 show_message "Configuration complete. .env file has been filled."
 ######################################################
